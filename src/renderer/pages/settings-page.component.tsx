@@ -84,12 +84,14 @@ export function SettingsPage() {
     const themeSelected = useObservable(() => themeService.theme$, "os");
     const languageSelected = useObservable(() => i18nService.currentLanguage$, i18nService.getFallbackLanguage());
     const downloadStore = useObservable(() => bsDownloader.defaultStore$);
+    const oneclickKeepSameVersion = useObservable(() => configService.watch("oneclickKeepSameVersion"));
 
     const [installationFolder, setInstallationFolder] = useState(null);
     const [showSupporters, setShowSupporters] = useState(false);
     const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
+    const [versionSelectorDeepLinkEnabled, setVersionSelectorDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
     const appVersion = useObservable(() => ipcService.sendV2<string>("current-version"));
 
@@ -102,6 +104,7 @@ export function SettingsPage() {
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
+        versionSelectorDeepLinkEnabled
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
@@ -292,69 +295,20 @@ export function SettingsPage() {
 
                 <SettingContainer title="pages.settings.additional-content.title" description="pages.settings.additional-content.description">
                     <SettingContainer id="one-clicks" minorTitle="pages.settings.additional-content.deep-links.sub-title">
-                        <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer mb-1.5" onClick={toogleAllDeepLinks}>
-                            <div className="flex items-center gap-2">
-                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleAllDeepLinks} checked={allDeepLinkEnabled} />
-                                <span className="font-extrabold">{t("notifications.settings.additional-content.deep-link.select-all")}</span>
-                            </div>
-                            <div className="flex h-full gap-2">
-                                <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
-                                    <BsmImage
-                                        className="h-8 cursor-pointer"
-                                        image={beatSaverIcon}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            linkOpener.open("https://beatsaver.com/");
-                                        }}
-                                    />
-                                </Tippy>
-                                <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
-                                    <BsmImage
-                                        className="h-8 rounded-md cursor-pointer"
-                                        image={beastSaberIcon}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            linkOpener.open("https://bsaber.com/");
-                                        }}
-                                    />
-                                </Tippy>
-                                <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
-                                    <BsmImage
-                                        className="h-8 cursor-pointer"
-                                        image={scoreSaberIcon}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            linkOpener.open("https://scoresaber.com/");
-                                        }}
-                                    />
-                                </Tippy>
-                                <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
-                                    <BsmImage
-                                        className="h-8 cursor-pointer"
-                                        image={beatleaderIcon}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            linkOpener.open("https://www.beatleader.xyz/");
-                                        }}
-                                    />
-                                </Tippy>
-                                <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
-                                    <BsmImage
-                                        className="h-8 cursor-pointer"
-                                        image={modelSaberIcon}
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            linkOpener.open("https://modelsaber.com/");
-                                        }}
-                                    />
-                                </Tippy>
-                            </div>
-                        </div>
-                        <ul className="w-full flex flex-col gap-1.5 pl-10">
-                            <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={() => toogleMapDeepLinks()}>
+                        <SettingContainer className="mt-3" description="pages.settings.additional-content.deep-link.description" >
+                        <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer mb-1.5">
                                 <div className="flex items-center gap-2">
-                                    <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => toogleMapDeepLinks()} checked={mapDeepLinksEnabled} />
-                                    <span className="font-extrabold">{t("misc.maps")}</span>
+                                    <BsmCheckbox className="relative z-[1] h-5 w-5" checked={!!true} />
+                                    <span className="font-extrabold">{t("notifications.settings.additional-content.deep-link.version-selector")}</span>
+                                </div>
+                            </div>
+                        </SettingContainer>
+
+                        <SettingContainer className="mt-3" description="pages.settings.additional-content.deep-link.description">
+                            <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer mb-1.5" onClick={toogleAllDeepLinks}>
+                                <div className="flex items-center gap-2">
+                                    <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleAllDeepLinks} checked={allDeepLinkEnabled} />
+                                    <span className="font-extrabold">{t("notifications.settings.additional-content.deep-link.select-all")}</span>
                                 </div>
                                 <div className="flex h-full gap-2">
                                     <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
@@ -397,32 +351,6 @@ export function SettingsPage() {
                                             }}
                                         />
                                     </Tippy>
-                                </div>
-                            </li>
-                            <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={() => tooglePlaylistsDeepLinks()}>
-                                <div className="flex items-center gap-2">
-                                    <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => tooglePlaylistsDeepLinks()} checked={playlistsDeepLinkEnabled} />
-                                    <span className="font-extrabold">{t("misc.playlists")}</span>
-                                </div>
-                                <div className="flex h-full">
-                                    <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
-                                        <BsmImage
-                                            className="h-8 cursor-pointer"
-                                            image={beatSaverIcon}
-                                            onClick={e => {
-                                                e.stopPropagation();
-                                                linkOpener.open("https://beatsaver.com/");
-                                            }}
-                                        />
-                                    </Tippy>
-                                </div>
-                            </li>
-                            <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={() => toogleModelsDeepLinks()}>
-                                <div className="flex items-center gap-2">
-                                    <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => toogleModelsDeepLinks()} checked={modelsDeepLinkEnabled} />
-                                    <span className="font-extrabold">{t("misc.models")}</span>
-                                </div>
-                                <div className="flex h-full">
                                     <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
@@ -434,8 +362,94 @@ export function SettingsPage() {
                                         />
                                     </Tippy>
                                 </div>
-                            </li>
-                        </ul>
+                            </div>
+                            <ul className="w-full flex flex-col gap-1.5 pl-10">
+                                <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={() => toogleMapDeepLinks()}>
+                                    <div className="flex items-center gap-2">
+                                        <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => toogleMapDeepLinks()} checked={mapDeepLinksEnabled} />
+                                        <span className="font-extrabold">{t("misc.maps")}</span>
+                                    </div>
+                                    <div className="flex h-full gap-2">
+                                        <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                            <BsmImage
+                                                className="h-8 cursor-pointer"
+                                                image={beatSaverIcon}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    linkOpener.open("https://beatsaver.com/");
+                                                }}
+                                            />
+                                        </Tippy>
+                                        <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                            <BsmImage
+                                                className="h-8 rounded-md cursor-pointer"
+                                                image={beastSaberIcon}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    linkOpener.open("https://bsaber.com/");
+                                                }}
+                                            />
+                                        </Tippy>
+                                        <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                            <BsmImage
+                                                className="h-8 cursor-pointer"
+                                                image={scoreSaberIcon}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    linkOpener.open("https://scoresaber.com/");
+                                                }}
+                                            />
+                                        </Tippy>
+                                        <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                            <BsmImage
+                                                className="h-8 cursor-pointer"
+                                                image={beatleaderIcon}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    linkOpener.open("https://www.beatleader.xyz/");
+                                                }}
+                                            />
+                                        </Tippy>
+                                    </div>
+                                </li>
+                                <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={() => tooglePlaylistsDeepLinks()}>
+                                    <div className="flex items-center gap-2">
+                                        <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => tooglePlaylistsDeepLinks()} checked={playlistsDeepLinkEnabled} />
+                                        <span className="font-extrabold">{t("misc.playlists")}</span>
+                                    </div>
+                                    <div className="flex h-full">
+                                        <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                            <BsmImage
+                                                className="h-8 cursor-pointer"
+                                                image={beatSaverIcon}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    linkOpener.open("https://beatsaver.com/");
+                                                }}
+                                            />
+                                        </Tippy>
+                                    </div>
+                                </li>
+                                <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={() => toogleModelsDeepLinks()}>
+                                    <div className="flex items-center gap-2">
+                                        <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => toogleModelsDeepLinks()} checked={modelsDeepLinkEnabled} />
+                                        <span className="font-extrabold">{t("misc.models")}</span>
+                                    </div>
+                                    <div className="flex h-full">
+                                        <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                            <BsmImage
+                                                className="h-8 cursor-pointer"
+                                                image={modelSaberIcon}
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    linkOpener.open("https://modelsaber.com/");
+                                                }}
+                                            />
+                                        </Tippy>
+                                    </div>
+                                </li>
+                            </ul>
+                        </SettingContainer>
                     </SettingContainer>
                 </SettingContainer>
 

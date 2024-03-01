@@ -87,7 +87,7 @@ export class LocalMapsManagerService {
         const mapRawInfo: RawMapInfoData = JSON.parse(rawInfoString);
         const shasum = crypto.createHash("sha1");
         shasum.update(rawInfoString);
-    
+
         const hashFile = (filePath: string): Promise<void> => {
             return new Promise<void>((resolve, reject) => {
                 const stream = createReadStream(filePath);
@@ -103,7 +103,7 @@ export class LocalMapsManagerService {
                 await hashFile(diffFilePath);
             }
         }
-    
+
         return shasum.digest("hex");
     }
 
@@ -147,7 +147,7 @@ export class LocalMapsManagerService {
 
         });
 
-        
+
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress> {
@@ -261,7 +261,7 @@ export class LocalMapsManagerService {
             if(!exists){ return null; }
             return this.loadMapInfoFromPath(mapPath);
         }).catch(() => null);
-        
+
         if(map.versions.every(version => version.hash === installedMap?.hash)) {
             return installedMap;
         }
