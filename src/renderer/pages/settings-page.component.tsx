@@ -42,8 +42,6 @@ import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
-import { config } from "process";
-
 
 export function SettingsPage() {
 
@@ -65,7 +63,6 @@ export function SettingsPage() {
     const autoUpdater = useService(AutoUpdaterService);
 
     const { firstColor, secondColor } = useThemeColor();
-    const ONECLICK_KEEP_SAME_VERSION = "oneclick-keep-same-version";
 
     const themeItem: RadioItem<ThemeConfig>[] = [
         { id: 0, text: "pages.settings.appearance.themes.dark", value: "dark" as ThemeConfig },
@@ -99,19 +96,16 @@ export function SettingsPage() {
     const [isChangelogAvailable, setIsChangelogAvailable] = useState(true);
     const [changlogsLoading, setChanglogsLoading] = useState(false);
 
-
-
     useEffect(() => {
         loadInstallationFolder();
         loadDownloadersSession();
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
-        setVersionSelectorDeepLinkEnabled(configService.get<boolean>(ONECLICK_KEEP_SAME_VERSION));
+        setVersionSelectorDeepLinkEnabled(configService.get<boolean>("oneclicks_keep_same_version" as DefaultConfigKey));
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
-
 
     const resetColors = () => {
         configService.delete("first-color" as DefaultConfigKey);
@@ -257,7 +251,7 @@ export function SettingsPage() {
     const toogleOneClickKeepSameVersion = () => {
         const newValue = !versionSelectorDeepLinkEnabled;
         setVersionSelectorDeepLinkEnabled(newValue);
-        configService.set(ONECLICK_KEEP_SAME_VERSION, newValue);
+        configService.set("oneclicks_keep_same_version" as DefaultConfigKey, newValue);
     }
 
     return (

@@ -10,8 +10,9 @@ export const defaultConfiguration: { [key in DefaultConfigKey]: any } = {
         window.electron.path.join("Beat Saber_Data", "CustomWIPLevels"),
         "DLC"
     ],
+    oneclicks_keep_same_version: false,
 };
 
-export type DefaultConfigKey = "first-color" | "second-color" | "theme" | "language" | "supported_languages" | "default_mods" | "default-shared-folders";
+export type DefaultConfigKey = "first-color" | "second-color" | "theme" | "language" | "supported_languages" | "default_mods" | "default-shared-folders" | "one_clicks_keep_same_version";
 
 export type ThemeConfig = "dark" | "light" | "os";
