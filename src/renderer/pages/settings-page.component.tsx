@@ -42,6 +42,7 @@ import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
+import { config } from "process";
 
 
 export function SettingsPage() {
@@ -64,6 +65,7 @@ export function SettingsPage() {
     const autoUpdater = useService(AutoUpdaterService);
 
     const { firstColor, secondColor } = useThemeColor();
+    const ONECLICK_KEEP_SAME_VERSION = "oneclick-keep-same-version";
 
     const themeItem: RadioItem<ThemeConfig>[] = [
         { id: 0, text: "pages.settings.appearance.themes.dark", value: "dark" as ThemeConfig },
@@ -84,7 +86,6 @@ export function SettingsPage() {
     const themeSelected = useObservable(() => themeService.theme$, "os");
     const languageSelected = useObservable(() => i18nService.currentLanguage$, i18nService.getFallbackLanguage());
     const downloadStore = useObservable(() => bsDownloader.defaultStore$);
-    const oneclickKeepSameVersion = useObservable(() => configService.watch("oneclickKeepSameVersion"));
 
     const [installationFolder, setInstallationFolder] = useState(null);
     const [showSupporters, setShowSupporters] = useState(false);
@@ -98,16 +99,19 @@ export function SettingsPage() {
     const [isChangelogAvailable, setIsChangelogAvailable] = useState(true);
     const [changlogsLoading, setChanglogsLoading] = useState(false);
 
+
+
     useEffect(() => {
         loadInstallationFolder();
         loadDownloadersSession();
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
-        versionSelectorDeepLinkEnabled
+        setVersionSelectorDeepLinkEnabled(configService.get<boolean>(ONECLICK_KEEP_SAME_VERSION));
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
+
 
     const resetColors = () => {
         configService.delete("first-color" as DefaultConfigKey);
@@ -250,6 +254,11 @@ export function SettingsPage() {
 
         res ? showDeepLinkSuccess(allDeepLinkEnabled) : showDeepLinkError(allDeepLinkEnabled);
     };
+    const toogleOneClickKeepSameVersion = () => {
+        const newValue = !versionSelectorDeepLinkEnabled;
+        setVersionSelectorDeepLinkEnabled(newValue);
+        configService.set(ONECLICK_KEEP_SAME_VERSION, newValue);
+    }
 
     return (
         <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
@@ -298,7 +307,7 @@ export function SettingsPage() {
                         <SettingContainer className="mt-3" description="pages.settings.additional-content.deep-link.description" >
                         <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer mb-1.5">
                                 <div className="flex items-center gap-2">
-                                    <BsmCheckbox className="relative z-[1] h-5 w-5" checked={!!true} />
+                                    <BsmCheckbox className="relative z-[1] h-5 w-5" checked={versionSelectorDeepLinkEnabled} onChange={toogleOneClickKeepSameVersion} />
                                     <span className="font-extrabold">{t("notifications.settings.additional-content.deep-link.version-selector")}</span>
                                 </div>
                             </div>
