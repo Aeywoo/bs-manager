@@ -13,6 +13,6 @@ export const defaultConfiguration: { [key in DefaultConfigKey]: any } = {
     oneclicks_keep_same_version: false,
 };
 
-export type DefaultConfigKey = "first-color" | "second-color" | "theme" | "language" | "supported_languages" | "default_mods" | "default-shared-folders" | "one_clicks_keep_same_version";
+export type DefaultConfigKey = "first-color" | "second-color" | "theme" | "language" | "supported_languages" | "default_mods" | "default-shared-folders" | "oneclicks_keep_same_version";
 
 export type ThemeConfig = "dark" | "light" | "os";
